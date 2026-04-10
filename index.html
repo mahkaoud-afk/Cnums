@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>نظام الزبائن - لوحة الموظفين</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, 'Segoe UI', 'Cairo', Tahoma, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f2b3d, #1a2a3a);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 60px;
+      padding: 15px 25px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      color: white;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .title h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .title p {
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    .stats {
+      display: flex;
+      gap: 25px;
+      background: #00000055;
+      padding: 8px 20px;
+      border-radius: 50px;
+    }
+
+    .stats div {
+      text-align: center;
+    }
+
+    .stats span:first-child {
+      font-size: 0.8rem;
+      display: block;
+      opacity: 0.8;
+    }
+
+    .stats span:last-child {
+      font-size: 1.6rem;
+      font-weight: bold;
+      display: block;
+      line-height: 1;
+    }
+
+    .reset-btn {
+      background: #c2412c;
+      border: none;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .reset-btn:active {
+      transform: scale(0.96);
+      background: #9b2c1a;
+    }
+
+    .employee-selector {
+      background: rgba(255,255,255,0.1);
+      border-radius: 60px;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .employee-selector label {
+      font-weight: bold;
+    }
+
+    .emp-dropdown {
+      padding: 10px 20px;
+      border-radius: 40px;
+      border: none;
+      background: #2c3e2f;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .current-user-badge {
+      background: #f5b042;
+      color: #1f2e3a;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-weight: bold;
+    }
+
+    .employees {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #fef9e8;
+      border-radius: 40px;
+      padding: 18px 12px 20px;
+      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+      transition: 0.2s;
+      text-align: center;
+    }
+
+    .card:active {
+      transform: scale(0.98);
+    }
+
+    .emp-name {
+      font-size: 1.7rem;
+      font-weight: bold;
+      background: #2c3e2f;
+      display: inline-block;
+      padding: 5px 25px;
+      border-radius: 50px;
+      color: #ffecb3;
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+    }
+
+    .numbers {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .num-box {
+      background: #e9e5d8;
+      flex: 1;
+      border-radius: 30px;
+      padding: 12px 5px;
+      box-shadow: inset 0 1px 3px #0001, 0 3px 6px #0002;
+    }
+
+    .num-label {
+      font-size: 0.7rem;
+      color: #4a5b6e;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    .num-value {
+      font-size: 2.3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #1f2e3a;
+    }
+
+    .current {
+      background: #ffefc0;
+      border: 2px solid #f5b042;
+    }
+    .current .num-value {
+      color: #c46f0a;
+      font-size: 2.6rem;
+    }
+
+    .call-btn {
+      background: #2b6e3c;
+      width: 90%;
+      border: none;
+      padding: 14px 0;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: white;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: 0.1s linear;
+      box-shadow: 0 5px 0 #154e21;
+      margin-top: 10px;
+    }
+
+    .call-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #154e21;
+    }
+
+    .call-btn:disabled {
+      opacity: 0.5;
+      transform: none;
+      cursor: not-allowed;
+      background: #5a6e5f;
+      box-shadow: 0 5px 0 #2f4233;
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 35px;
+      color: #b9d0e0;
+      font-size: 0.8rem;
+    }
+
+    .sync-status {
+      background: #2d5a2eaa;
+      padding: 5px 12px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 650px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+      }
+      .num-value {
+        font-size: 1.6rem;
+      }
+      .current .num-value {
+        font-size: 1.9rem;
+      }
+      .emp-name {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="title">
+      <h2>🪑 نظام الكراسي والزبائن</h2>
+      <p>7 موظفين | مزامنة فورية بين جميع الأجهزة</p>
+    </div>
+    <div class="employee-selector">
+      <label>👤 أنا الموظف:</label>
+      <select id="employeeSelect" class="emp-dropdown">
+        <option value="0">أحمد</option>
+        <option value="1">سارة</option>
+        <option value="2">يوسف</option>
+        <option value="3">ليلى</option>
+        <option value="4">كريم</option>
+        <option value="5">نور</option>
+        <option value="6">ماجد</option>
+      </select>
+      <div class="current-user-badge" id="currentUserBadge">أحمد</div>
+    </div>
+    <div class="stats">
+      <div><span>✅ تم خدمتهم</span><span id="totalServed">0</span></div>
+      <div><span>🔢 الرقم القادم</span><span id="nextGlobal">1</span></div>
+    </div>
+    <button class="reset-btn" id="resetAll">🔄 إعادة ضبط الكل</button>
+  </div>
+
+  <div class="employees" id="employeesContainer"></div>
+  <div class="footer-note">
+    👈 كل موظف لديه صفحته الخاصة | التغييرات تظهر فوراً على جميع الأجهزة |
+    <span class="sync-status">🔄 مزامنة مباشرة</span>
+  </div>
+</div>
+
+<script>
+  const MAX = 500;
+  const EMP_COUNT = 7;
+  const STORAGE_KEY = 'ticket_system_data';
+  
+  let nextNumber = 1;
+  let totalServed = 0;
+  let currentForEmp = new Array(EMP_COUNT).fill(null);
+  let lastFinishedForEmp = new Array(EMP_COUNT).fill(null);
+  let usedNumbers = new Set();
+  
+  let currentEmployeeId = parseInt(localStorage.getItem('selectedEmployee')) || 0;
+  
+  let syncTimeout = null;
+  
+  function saveToLocalStorage() {
+    const data = {
+      nextNumber: nextNumber,
+      totalServed: totalServed,
+      currentForEmp: currentForEmp,
+      lastFinishedForEmp: lastFinishedForEmp,
+      usedNumbers: Array.from(usedNumbers),
+      timestamp: Date.now()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    localStorage.setItem('ticket_system_last_update', Date.now().toString());
+  }
+  
+  function loadFromLocalStorage() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return false;
+    
+    try {
+      const data = JSON.parse(saved);
+      nextNumber = data.nextNumber;
+      totalServed = data.totalServed;
+      currentForEmp = data.currentForEmp;
+      lastFinishedForEmp = data.lastFinishedForEmp;
+      usedNumbers = new Set(data.usedNumbers || []);
+      return true;
+    } catch(e) {
+      return false;
+    }
+  }
+  
+  function broadcastUpdate() {
+    saveToLocalStorage();
+    localStorage.setItem('ticket_system_force_update', Date.now().toString());
+    if (syncTimeout) clearTimeout(syncTimeout);
+    syncTimeout = setTimeout(() => {
+      localStorage.removeItem('ticket_system_force_update');
+    }, 500);
+  }
+  
+  function updateCard(empId) {
+    const card = document.getElementById(`card_${empId}`);
+    if (!card) return;
+    
+    const current = currentForEmp[empId];
+    const last = lastFinishedForEmp[empId];
+    
+    let prevDisplay = "-";
+    if (last !== null && last >= 1) prevDisplay = last;
+    else if (current !== null && current - 1 >= 1) prevDisplay = current - 1;
+    
+    let nextDisplay = "-";
+    if (current !== null) {
+      let candidate = current + 1;
+      if (candidate <= MAX) nextDisplay = candidate;
+      else nextDisplay = "انتهى";
+    } else {
+      if (nextNumber <= MAX) nextDisplay = nextNumber;
+      else nextDisplay = "اكتمل";
+    }
+    
+    const currentSpan = card.querySelector(".current .num-value");
+    const prevSpan = card.querySelector(".num-box:first-child .num-value");
+    const nextSpan = card.querySelector(".num-box:last-child .num-value");
+    const btn = card.querySelector(".call-btn");
+    
+    if (currentSpan) currentSpan.innerText = (current !== null) ? current : "⚡";
+    if (prevSpan) prevSpan.innerText = prevDisplay;
+    if (nextSpan) nextSpan.innerText = nextDisplay;
+    
+    const canCall = (current !== null) || (nextNumber <= MAX);
+    if (btn) btn.disabled = !canCall;
+    
+    if (empId === currentEmployeeId) {
+      card.style.border = "3px solid #f5b042";
+      card.style.boxShadow = "0 0 0 2px #ffd966, 0 12px 25px rgba(0,0,0,0.2)";
+    } else {
+      card.style.border = "none";
+      card.style.boxShadow = "0 12px 25px rgba(0,0,0,0.2)";
+    }
+  }
+  
+  function refreshUI() {
+    for (let i = 0; i < EMP_COUNT; i++) {
+      updateCard(i);
+    }
+    document.getElementById("totalServed").innerText = totalServed;
+    const nextDisplay = (nextNumber <= MAX) ? nextNumber : "🚫 انتهى";
+    document.getElementById("nextGlobal").innerText = nextDisplay;
+    saveToLocalStorage();
+  }
+  
+  function requestNewCustomer(empId) {
+    if (empId !== currentEmployeeId) {
+      alert("⚠️ يمكنك فقط طلب زبون من صفحتك الخاصة!");
+      return;
+    }
+    
+    const hasCurrent = (currentForEmp[empId] !== null);
+    
+    if (hasCurrent) {
+      const finishedNum = currentForEmp[empId];
+      usedNumbers.delete(finishedNum);
+      totalServed++;
+      lastFinishedForEmp[empId] = finishedNum;
+      currentForEmp[empId] = null;
+      
+      document.getElementById("totalServed").innerText = totalServed;
+      
+      if (nextNumber > MAX) {
+        refreshUI();
+        broadcastUpdate();
+        alert(`✅ تم إنهاء خدمة الزبون رقم ${finishedNum}. لا يوجد زبائن في الانتظار (الحد الأقصى ${MAX}).`);
+        return;
+      }
+    }
+    
+    if (nextNumber > MAX) {
+      if (!hasCurrent) {
+        alert(`⚠️ لا يوجد أرقام متاحة، تم الوصول للحد الأقصى ${MAX}.`);
+      }
+      refreshUI();
+      broadcastUpdate();
+      return;
+    }
+    
+    const newTicket = nextNumber;
+    
+    if (usedNumbers.has(newTicket)) {
+      alert("خطأ في النظام، يرجى إعادة تحميل الصفحة");
+      return;
+    }
+    
+    currentForEmp[empId] = newTicket;
+    usedNumbers.add(newTicket);
+    nextNumber++;
+    
+    refreshUI();
+    broadcastUpdate();
+    
+    const cardEl = document.getElementById(`card_${empId}`);
+    if (cardEl) {
+      cardEl.style.transform = "scale(0.97)";
+      setTimeout(() => { if(cardEl) cardEl.style.transform = ""; }, 120);
+    }
+    
+    if (nextNumber > MAX) {
+      document.getElementById("nextGlobal").innerText = "🚫 انتهى";
+    }
+  }
+  
+  function fullReset() {
+    if (!confirm("⚠️ إعادة الضبط ستمسح جميع الأرقام الحالية والخدمات على جميع الأجهزة. هل أنت متأكد؟")) return;
+    
+    nextNumber = 1;
+    totalServed = 0;
+    currentForEmp.fill(null);
+    lastFinishedForEmp.fill(null);
+    usedNumbers.clear();
+    
+    refreshUI();
+    broadcastUpdate();
+    alert("✅ تم إعادة ضبط النظام. جميع الموظفين الآن بدون زبائن، والرقم القادم هو 1");
+  }
+  
+  function buildEmployees() {
+    const container = document.getElementById("employeesContainer");
+    container.innerHTML = "";
+    const names = ["أحمد", "سارة", "يوسف", "ليلى", "كريم", "نور", "ماجد"];
+    
+    for (let i = 0; i < EMP_COUNT; i++) {
+      const empName = names[i];
+      const card = document.createElement("div");
+      card.className = "card";
+      card.id = `card_${i}`;
+      
+      card.innerHTML = `
+        <div class="emp-name">🧑‍💼 ${empName}</div>
+        <div class="numbers">
+          <div class="num-box">
+            <div class="num-label">📋 السابق</div>
+            <div class="num-value">-</div>
+          </div>
+          <div class="num-box current">
+            <div class="num-label">🟡 الحالي</div>
+            <div class="num-value">⚡</div>
+          </div>
+          <div class="num-box">
+            <div class="num-label">🔜 التالي</div>
+            <div class="num-value">-</div>
+          </div>
+        </div>
+        <button class="call-btn">📢 طلب زبون جديد</button>
+      `;
+      
+      container.appendChild(card);
+      
+      const btn = card.querySelector(".call-btn");
+      btn.addEventListener("click", (function(id) {
+        return function() { requestNewCustomer(id); };
+      })(i));
+    }
+    
+    refreshUI();
+  }
+  
+  function switchEmployee() {
+    const select = document.getElementById("employeeSelect");
+    const newEmpId = parseInt(select.value);
+    currentEmployeeId = newEmpId;
+    localStorage.setItem('selectedEmployee', currentEmployeeId);
+    
+    const names = ["أحمد", "سارة", "يوسف", "ليلى", "كريم", "نور", "ماجد"];
+    document.getElementById("currentUserBadge").innerText = names[currentEmployeeId];
+    
+    for (let i = 0; i < EMP_COUNT; i++) {
+      updateCard(i);
+    }
+  }
+  
+  function syncFromStorage() {
+    const newData = localStorage.getItem(STORAGE_KEY);
+    if (!newData) return;
+    
+    try {
+      const data = JSON.parse(newData);
+      let changed = false;
+      
+      if (data.nextNumber !== nextNumber) {
+        nextNumber = data.nextNumber;
+        changed = true;
+      }
+      if (data.totalServed !== totalServed) {
+        totalServed = data.totalServed;
+        changed = true;
+      }
+      if (JSON.stringify(data.currentForEmp) !== JSON.stringify(currentForEmp)) {
+        currentForEmp = data.currentForEmp;
+        changed = true;
+      }
+      if (JSON.stringify(data.lastFinishedForEmp) !== JSON.stringify(lastFinishedForEmp)) {
+        lastFinishedForEmp = data.lastFinishedForEmp;
+        changed = true;
+      }
+      
+      const newUsedSet = new Set(data.usedNumbers || []);
+      if (JSON.stringify(Array.from(usedNumbers)) !== JSON.stringify(Array.from(newUsedSet))) {
+        usedNumbers = newUsedSet;
+        changed = true;
+      }
+      
+      if (changed) {
+        refreshUI();
+      }
+    } catch(e) {}
+  }
+  
+  window.addEventListener('storage', function(e) {
+    if (e.key === STORAGE_KEY || e.key === 'ticket_system_force_update') {
+      syncFromStorage();
+    }
+  });
+  
+  function startAutoSync() {
+    syncFromStorage();
+    setInterval(() => {
+      const lastUpdate = localStorage.getItem('ticket_system_last_update');
+      if (lastUpdate) {
+        syncFromStorage();
+      }
+    }, 800);
+  }
+  
+  function init() {
+    const saved = loadFromLocalStorage();
+    if (!saved) {
+      currentForEmp.fill(null);
+      lastFinishedForEmp.fill(null);
+      usedNumbers.clear();
+      nextNumber = 1;
+      totalServed = 0;
+    }
+    
+    buildEmployees();
+    
+    const savedEmp = localStorage.getItem('selectedEmployee');
+    if (savedEmp !== null) {
+      currentEmployeeId = parseInt(savedEmp);
+      document.getElementById("employeeSelect").value = currentEmployeeId;
+    }
+    
+    const names = ["أحمد", "سارة", "يوسف", "ليلى", "كريم", "نور", "ماجد"];
+    document.getElementById("currentUserBadge").innerText = names[currentEmployeeId];
+    
+    document.getElementById("employeeSelect").addEventListener("change", switchEmployee);
+    document.getElementById("resetAll").addEventListener("click", fullReset);
+    
+    startAutoSync();
+    
+    setInterval(() => {
+      const nextSpan = document.getElementById("nextGlobal");
+      if (nextSpan) {
+        const expected = (nextNumber <= MAX) ? nextNumber : "🚫 انتهى";
+        if (nextSpan.innerText != expected) {
+          nextSpan.innerText = expected;
+        }
+      }
+      const totalSpan = document.getElementById("totalServed");
+      if (totalSpan && totalSpan.innerText != totalServed) {
+        totalSpan.innerText = totalServed;
+      }
+    }, 200);
+  }
+  
+  init();
+</script>
+</body>
+</html>
